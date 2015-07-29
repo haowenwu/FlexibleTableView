@@ -57,8 +57,8 @@ public class FlexibleTableViewCell: UITableViewCell {
     
     
     public func addIndicatorView() {/*
-        let point = self.accessoryView!.center;
-        let bounds = self.accessoryView!.bounds;
+        let point = self.accessoryView!.center
+        let bounds = self.accessoryView!.bounds
         
         let frame = CGRectMake((point.x - CGRectGetWidth(bounds) * 1.5), point.y * 1.4, CGRectGetWidth(bounds) * 3.0, CGRectGetHeight(self.bounds) - point.y * 1.4);
         let indicatorView = FlexibleTableViewCellIndicator(frame:frame)
