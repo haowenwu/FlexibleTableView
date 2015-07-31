@@ -18,27 +18,27 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
             ["Section1_Row0", "Row0_Subrow1", "Row0_Subrow2", "Row0_Subrow3"],
             ["Section1_Row1"]]
     ]
-    
+    var tableView: FlexibleTableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let tableview = FlexibleTableView(frame: view.frame, delegate: self)
-        view.addSubview(tableview)
+        tableView = FlexibleTableView(frame: view.frame, delegate: self)
+        view.addSubview(tableView)
         
         navigationItem.title = "FlexibleTableView";
-        /*
-        navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Collapse"
-        style:UIBarButtonItemStylePlain
-        target:self
-        action:@selector(collapseSubrows)];*/
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title:"Collapse",
+            style:.Plain,
+            target:self,
+            action:"collapseSubrows")
     }
-
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int
+    
+    func numberOfSectionsInTableView(tableView: FlexibleTableView) -> Int
     {
         return contents.count
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    func tableView(tableView: FlexibleTableView, numberOfRowsInSection section: Int) -> Int
     {
         return contents[section].count
     }
@@ -57,12 +57,12 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         return false
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    
-        let cell = FlexibleTableViewCell(style:.Default, reuseIdentifier:"FlexibleTableViewCell")
-    
+    func tableView(tableView: FlexibleTableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> FlexibleTableViewCell {
+        
+        let cell = FlexibleTableViewCell(style:.Default, reuseIdentifier:"cell")
+        
         cell.textLabel!.text = contents[indexPath.section][indexPath.row][0]
-    
+        
         if ((indexPath.section == 0 && (indexPath.row == 1 || indexPath.row == 0)) || (indexPath.section == 1 && (indexPath.row == 0 || indexPath.row == 2))) {
             cell.expandable = true
         } else {
@@ -73,13 +73,17 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
     }
     
     func tableView(tableView: FlexibleTableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell {
-        let cell = FlexibleTableViewCell(style:.Default, reuseIdentifier:"FlexibleTableViewCell")
+        let cell = UITableViewCell(style:.Default, reuseIdentifier:"cell")
         cell.textLabel!.text = contents[indexPath.section][indexPath.row][indexPath.subRow]
         return cell;
     }
     
     
     func collapseSubrows() {
-        //tableView.collapseCurrentlyExpandedIndexPaths()
+        tableView.collapseCurrentlyExpandedIndexPaths()
+    }
+    
+    func tableView(tableView: FlexibleTableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30.0
     }
 }
