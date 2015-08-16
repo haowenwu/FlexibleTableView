@@ -74,6 +74,7 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
     
     func tableView(tableView: FlexibleTableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style:.Default, reuseIdentifier:"cell")
+        cell.backgroundColor=UIColor.groupTableViewBackgroundColor()
         cell.textLabel!.text = contents[indexPath.section][indexPath.row][indexPath.subRow]
         return cell;
     }

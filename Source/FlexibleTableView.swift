@@ -3,7 +3,7 @@
 //  FlexibleTableView
 //
 //  Created by 吴浩文 on 15/7/29.
-//
+//  Copyright (c) 2015年 吴浩文. All rights reserved.
 //
 
 import UIKit
@@ -61,29 +61,16 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         if correspondingIndexPath.subRow == 0 {
             let expandableCell = flexibleTableViewDelegate.tableView(self, cellForRowAtIndexPath:correspondingIndexPath.ns)
             
-            let isExpanded = (expandableCells[correspondingIndexPath.section] as! NSMutableArray)[correspondingIndexPath.row][kIsExpandedKey] as! Bool
-            
             if (expandableCell.expandable) {
-                expandableCell.expanded = isExpanded;
-                
-                if (isExpanded){
+                expandableCell.expanded = (expandableCells[correspondingIndexPath.section] as! NSMutableArray)[correspondingIndexPath.row][kIsExpandedKey] as! Bool
+                if (expandableCell.expanded){
                     expandableCell.accessoryView!.transform = CGAffineTransformMakeRotation(CGFloat(M_PI));
-                } else if (expandableCell.containsIndicatorView()) {
-                    expandableCell.removeIndicatorView()
                 }
-            } else {
-                expandableCell.expanded = false
-                expandableCell.accessoryView = nil;
-                expandableCell.removeIndicatorView()
             }
-            
             return expandableCell;
-        }
-        else{
+        } else {
             let cell = flexibleTableViewDelegate.tableView(self, cellForSubRowAtIndexPath:correspondingIndexPath)
-            cell.backgroundColor = separatorColor
-            cell.backgroundView = nil;
-            cell.indentationLevel = 2;
+            cell.indentationLevel = 2
             return cell;
         }
     }
