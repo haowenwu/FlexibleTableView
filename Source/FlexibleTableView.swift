@@ -54,7 +54,7 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         self.dataSource=self
         refreshData()
     }
-    required public init(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+    required public init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
     
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
         let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
@@ -93,24 +93,24 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
                 
                 let numberOfSubRows = numberOfSubRowsAtIndexPath(correspondingIndexPath.ns)
                 
-                let expandedIndexPaths = NSMutableArray()
+                var expandedIndexPaths = [NSIndexPath]()
                 let row = _indexPath.row;
                 let section = _indexPath.section;
                 
                 for var index = 1; index <= numberOfSubRows; index++ {
                     let expIndexPath = NSIndexPath(forRow:row+index, inSection:section)
-                    expandedIndexPaths.addObject(expIndexPath)
+                    expandedIndexPaths.append(expIndexPath)
                 }
                 
                 if (x.expanded)
                 {
                     setExpanded(true, forCellAtIndexPath:correspondingIndexPath)
-                    insertRowsAtIndexPaths(expandedIndexPaths as [AnyObject], withRowAnimation:UITableViewRowAnimation.Top)
+                    insertRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
                 }
                 else
                 {
                     setExpanded(false, forCellAtIndexPath:correspondingIndexPath)
-                    deleteRowsAtIndexPaths(expandedIndexPaths as [AnyObject], withRowAnimation:UITableViewRowAnimation.Top)
+                    deleteRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
                 }
                 
                 x.accessoryViewAnimation()
@@ -154,18 +154,17 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
     }
     
     func correspondingIndexPathForRowAtIndexPath(indexPath: NSIndexPath) -> FlexibleIndexPath {
-        var correspondingIndexPath: FlexibleIndexPath
         var expandedSubrows = 0;
         
         let rows = self.expandableCells[indexPath.section] as! NSArray
-        for (index, value) in enumerate(rows) {
+        for (index, value) in rows.enumerate() {
             let isExpanded = value[self.kIsExpandedKey] as! Bool
             var numberOfSubrows = 0;
             if (isExpanded){
                 numberOfSubrows = value[self.kSubrowsKey] as! Int
             }
             
-            var subrow = indexPath.row - expandedSubrows - index;
+            let subrow = indexPath.row - expandedSubrows - index;
             if (subrow > numberOfSubrows){
                 expandedSubrows += numberOfSubrows;
             }
@@ -182,13 +181,13 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
     }
     
     public func collapseCurrentlyExpandedIndexPaths() {
-        let totalExpandedIndexPaths = NSMutableArray()
+        var totalExpandedIndexPaths = [NSIndexPath]()
         let totalExpandableIndexPaths = NSMutableArray()
         
         for x in expandableCells {
             var totalExpandedSubrows = 0;
             
-            for (index, value) in enumerate(x.value as! NSArray) {
+            for (index, value) in (x.value as! NSArray).enumerate() {
                 
                 let currentRow = index + totalExpandedSubrows;
                 
@@ -198,7 +197,7 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
                     for (var index = 1; index <= expandedSubrows; index++)
                     {
                         let expandedIndexPath = NSIndexPath(forRow:currentRow + index, inSection:x.key as! Int)
-                        totalExpandedIndexPaths.addObject(expandedIndexPath)
+                        totalExpandedIndexPaths.append(expandedIndexPath)
                     }
                     
                     value.setObject(false, forKey:kIsExpandedKey)
@@ -217,12 +216,12 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
             cell.accessoryViewAnimation()
         }
         
-        deleteRowsAtIndexPaths(totalExpandedIndexPaths as [AnyObject], withRowAnimation:UITableViewRowAnimation.Top)
+        deleteRowsAtIndexPaths(totalExpandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
     }
     
     public func refreshData(){
         expandableCells.removeAllObjects()
-        for var section = 0; section < numberOfSections(); section++ {
+        for var section = 0; section < numberOfSections; section++ {
             let numberOfRowsInSection = flexibleTableViewDelegate.tableView(self, numberOfRowsInSection:section)
             let rows = NSMutableArray()
             for var row = 0; row < numberOfRowsInSection; row++ {

@@ -31,17 +31,17 @@ public class FlexibleTableViewCell: UITableViewCell {
     let kIndicatorViewTag = -1
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {super.init(style: style, reuseIdentifier: reuseIdentifier)}
-    required public init(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+    required public init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
     
     
     public func accessoryViewAnimation() {
         UIView.animateWithDuration(0.2){
-                if (self.expanded) {
-                    self.accessoryView!.transform = CGAffineTransformMakeRotation(CGFloat(M_PI));
-                } else {
-                    self.accessoryView!.transform = CGAffineTransformMakeRotation(0);
-                }
+            if (self.expanded) {
+                self.accessoryView!.transform = CGAffineTransformMakeRotation(CGFloat(M_PI));
+            } else {
+                self.accessoryView!.transform = CGAffineTransformMakeRotation(0);
             }
+        }
     }
 }
 
@@ -53,7 +53,7 @@ public class FlexibleTableViewCellIndicator: UIView {
         backgroundColor=UIColor.clearColor()
     }
     
-    required public init(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
+    required public init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
     
     override public func drawRect(rect: CGRect) {
         let context = UIGraphicsGetCurrentContext();
