@@ -17,7 +17,7 @@ pod "FlexibleTableView"
 ```
 
 ## Screenshot
-![FlexibleTableView](./Screenshot.gif)
+![FlexibleTableView](https://github.com/AlexHaowenWU/FlexibleTableView/blob/master/Screenshot.gif)
 
 ## Usage
 
