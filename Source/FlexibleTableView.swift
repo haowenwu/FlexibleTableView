@@ -47,7 +47,7 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
     
     public let expandableCells = NSMutableDictionary()
     
-    init(frame: CGRect,delegate: FlexibleTableViewDelegate) {
+    public init(frame: CGRect,delegate: FlexibleTableViewDelegate) {
         flexibleTableViewDelegate = delegate
         super.init(frame: frame, style: .Plain)
         self.delegate=self
