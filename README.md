@@ -24,10 +24,10 @@ pod "FlexibleTableView"
 FlexibleTableView work the same as UITableView but just with one FlexibleTableViewDelegate.
 
 ```swift
-func tableView(tableView: FlexibleTableView, numberOfRowsInSection section: Int) -> Int
-func tableView(tableView: FlexibleTableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
-func tableView(tableView: FlexibleTableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> FlexibleTableViewCell
-func tableView(tableView: FlexibleTableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell
+func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell
 ```
 
 ## License

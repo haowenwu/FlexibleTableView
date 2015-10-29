@@ -33,22 +33,22 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
             action:"collapseSubrows")
     }
     
-    func numberOfSectionsInTableView(tableView: FlexibleTableView) -> Int
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int
     {
         return contents.count
     }
     
-    func tableView(tableView: FlexibleTableView, numberOfRowsInSection section: Int) -> Int
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
         return contents[section].count
     }
     
-    func tableView(tableView: FlexibleTableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
+    func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
     {
         return contents[indexPath.section][indexPath.row].count - 1;
     }
     
-    func tableView(tableView: FlexibleTableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool
+    func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool
     {
         if (indexPath.section == 1 && indexPath.row == 0){
             return true
@@ -57,7 +57,7 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         return false
     }
     
-    func tableView(tableView: FlexibleTableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> FlexibleTableViewCell {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell = FlexibleTableViewCell(style:.Default, reuseIdentifier:"cell")
         
@@ -72,7 +72,7 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         return cell;
     }
     
-    func tableView(tableView: FlexibleTableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell {
+    func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style:.Default, reuseIdentifier:"cell")
         cell.backgroundColor=UIColor.groupTableViewBackgroundColor()
         cell.textLabel!.text = contents[indexPath.section][indexPath.row][indexPath.subRow]
@@ -84,7 +84,7 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         tableView.collapseCurrentlyExpandedIndexPaths()
     }
     
-    func tableView(tableView: FlexibleTableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 30.0
     }
 }
