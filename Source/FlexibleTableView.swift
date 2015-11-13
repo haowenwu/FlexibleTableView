@@ -13,6 +13,7 @@ import UIKit
     func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell
+    
     optional func numberOfSectionsInTableView(tableView: UITableView) -> Int
     optional func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
     optional func tableView(tableView: UITableView, heightForSubRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
@@ -25,6 +26,9 @@ import UIKit
     optional func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     optional func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
     optional func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool
+    
+    optional func scrollViewDidScroll(scrollView: UIScrollView)
+    optional func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool)
 }
 
 public class FlexibleIndexPath: NSObject{
@@ -56,7 +60,7 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
     }
     required public init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
     
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
+    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
         if correspondingIndexPath.subRow == 0 {
             let expandableCell = flexibleTableViewDelegate.tableView(self, cellForRowAtIndexPath:correspondingIndexPath.ns) as! FlexibleTableViewCell
@@ -284,21 +288,19 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         return nil
     }
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if flexibleTableViewDelegate.respondsToSelector("tableView:titleForFooterInSection:") {
-            return flexibleTableViewDelegate.tableView!(self, titleForFooterInSection: section)
-        }
-        return nil
+        return flexibleTableViewDelegate.tableView?(self, titleForFooterInSection: section)
     }
     public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if flexibleTableViewDelegate.respondsToSelector("tableView:viewForHeaderInSection:") {
-            return flexibleTableViewDelegate.tableView!(self, viewForHeaderInSection: section)
-        }
-        return nil
+        return flexibleTableViewDelegate.tableView?(self, viewForHeaderInSection: section)
     }
     public func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if flexibleTableViewDelegate.respondsToSelector("tableView:viewForFooterInSection:") {
-            return flexibleTableViewDelegate.tableView!(self, viewForFooterInSection: section)
-        }
-        return nil
+        return flexibleTableViewDelegate.tableView?(self, viewForFooterInSection: section)
+    }
+    
+    public func scrollViewDidScroll(scrollView: UIScrollView) {
+        flexibleTableViewDelegate.scrollViewDidScroll?(scrollView)
+    }
+    public func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        flexibleTableViewDelegate.scrollViewDidEndDragging?(scrollView, willDecelerate: decelerate)
     }
 }
