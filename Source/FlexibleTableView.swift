@@ -13,12 +13,11 @@ import UIKit
     func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell
-    
     optional func numberOfSectionsInTableView(tableView: UITableView) -> Int
     optional func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
     optional func tableView(tableView: UITableView, heightForSubRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
     optional func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
-    optional func tableView(tableView: UITableView, didSelectSubRowAtIndexPath indexPath: NSIndexPath)
+    optional func tableView(tableView: FlexibleTableView, didSelectSubRowAtIndexPath indexPath: FlexibleIndexPath)
     optional func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
     optional func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat
     optional func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String?
@@ -26,9 +25,6 @@ import UIKit
     optional func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
     optional func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
     optional func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool
-    
-    optional func scrollViewDidScroll(scrollView: UIScrollView)
-    optional func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool)
 }
 
 public class FlexibleIndexPath: NSObject{
@@ -84,60 +80,50 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         tableView.deselectRowAtIndexPath(indexPath, animated:true)
         
         let cell = tableView.cellForRowAtIndexPath(indexPath)
+        
         if let x = cell as? FlexibleTableViewCell {
-            if x.expandable {
-                x.expanded = !x.expanded
-                
-                var _indexPath = indexPath
-                let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(_indexPath)
-                if (x.expanded && shouldExpandOnlyOneCell) {
-                    _indexPath = correspondingIndexPath.ns;
-                    collapseCurrentlyExpandedIndexPaths()
-                }
-                
-                let numberOfSubRows = numberOfSubRowsAtIndexPath(correspondingIndexPath.ns)
-                
-                var expandedIndexPaths = [NSIndexPath]()
-                let row = _indexPath.row;
-                let section = _indexPath.section;
-                
-                for var index = 1; index <= numberOfSubRows; index++ {
-                    let expIndexPath = NSIndexPath(forRow:row+index, inSection:section)
-                    expandedIndexPaths.append(expIndexPath)
-                }
-                
-                if (x.expanded)
-                {
-                    setExpanded(true, forCellAtIndexPath:correspondingIndexPath)
-                    insertRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
-                }
-                else
-                {
-                    setExpanded(false, forCellAtIndexPath:correspondingIndexPath)
-                    deleteRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
-                }
-                
-                x.accessoryViewAnimation()
+            
+            if !x.expandable { return }
+            
+            x.expanded = !x.expanded
+            
+            var _indexPath = indexPath
+            let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(_indexPath)
+            if (x.expanded && shouldExpandOnlyOneCell) {
+                _indexPath = correspondingIndexPath.ns;
+                collapseCurrentlyExpandedIndexPaths()
             }
             
-            if flexibleTableViewDelegate.respondsToSelector("tableView:didSelectRowAtIndexPath:") {
-                let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
-                
-                if (correspondingIndexPath.subRow == 0) {
-                    flexibleTableViewDelegate.tableView!(self, didSelectRowAtIndexPath:correspondingIndexPath.ns)
-                } else {
-                    flexibleTableViewDelegate.tableView!(self, didSelectSubRowAtIndexPath:correspondingIndexPath.ns)
-                }
+            let numberOfSubRows = numberOfSubRowsAtIndexPath(correspondingIndexPath.ns)
+            
+            var expandedIndexPaths = [NSIndexPath]()
+            let row = _indexPath.row;
+            let section = _indexPath.section;
+            
+            for var index = 1; index <= numberOfSubRows; index++ {
+                let expIndexPath = NSIndexPath(forRow:row+index, inSection:section)
+                expandedIndexPaths.append(expIndexPath)
             }
             
-        }
-        else
-        {
-            if flexibleTableViewDelegate.respondsToSelector("tableView:didSelectSubRowAtIndexPath:"){
-                let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
-                
-                flexibleTableViewDelegate.tableView!(self, didSelectSubRowAtIndexPath:correspondingIndexPath.ns)
+            if (x.expanded)
+            {
+                setExpanded(true, forCellAtIndexPath:correspondingIndexPath)
+                insertRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
             }
+            else
+            {
+                setExpanded(false, forCellAtIndexPath:correspondingIndexPath)
+                deleteRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
+            }
+            
+            x.accessoryViewAnimation()
+            
+            flexibleTableViewDelegate.tableView?(self, didSelectRowAtIndexPath:indexPath)
+            
+        } else {
+            let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
+            
+            flexibleTableViewDelegate.tableView?(self, didSelectSubRowAtIndexPath:correspondingIndexPath)
         }
     }
     
@@ -282,10 +268,7 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         return 0.0
     }
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if flexibleTableViewDelegate.respondsToSelector("tableView:titleForHeaderInSection:") {
-            return flexibleTableViewDelegate.tableView!(self, titleForHeaderInSection: section)
-        }
-        return nil
+        return flexibleTableViewDelegate.tableView?(self, titleForHeaderInSection: section)
     }
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         return flexibleTableViewDelegate.tableView?(self, titleForFooterInSection: section)
@@ -295,12 +278,5 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
     }
     public func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return flexibleTableViewDelegate.tableView?(self, viewForFooterInSection: section)
-    }
-    
-    public func scrollViewDidScroll(scrollView: UIScrollView) {
-        flexibleTableViewDelegate.scrollViewDidScroll?(scrollView)
-    }
-    public func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        flexibleTableViewDelegate.scrollViewDidEndDragging?(scrollView, willDecelerate: decelerate)
     }
 }
