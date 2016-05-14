@@ -30,26 +30,22 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         navigationItem.rightBarButtonItem = UIBarButtonItem(title:"Collapse",
             style:.Plain,
             target:self,
-            action:"collapseSubrows")
+            action:#selector(ViewController.collapseSubrows))
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int
-    {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return contents.count
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-    {
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return contents[section].count
     }
     
-    func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
-    {
+    func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int {
         return contents[indexPath.section][indexPath.row].count - 1;
     }
     
-    func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool
-    {
+    func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool {
         if (indexPath.section == 1 && indexPath.row == 0){
             return true
         }
@@ -70,6 +66,18 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         }
         
         return cell;
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let cell = self.tableView(tableView, cellForRowAtIndexPath: indexPath)
+        
+        print("didSelectRowAtIndexPath", cell.textLabel?.text)
+    }
+    
+    func tableView(tableView: FlexibleTableView, didSelectSubRowAtIndexPath indexPath: FlexibleIndexPath) {
+        let cell = self.tableView(tableView, cellForSubRowAtIndexPath: indexPath)
+        
+        print("didSelectSubRowAtIndexPath", cell.textLabel?.text)
     }
     
     func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell {
