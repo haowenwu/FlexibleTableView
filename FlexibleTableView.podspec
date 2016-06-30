@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "FlexibleTableView"
-  s.version          = "1.1.2"
+  s.version          = "1.2"
   s.summary          = "A flexible tableview used on iOS implement by swift."
   s.homepage         = "https://github.com/awuu/FlexibleTableView"
   s.license          = 'MIT'

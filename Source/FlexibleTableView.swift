@@ -38,7 +38,7 @@ public class FlexibleIndexPath: NSObject{
 }
 
 public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDataSource {
-    public var flexibleTableViewDelegate: FlexibleTableViewDelegate
+    private unowned let flexibleTableViewDelegate: FlexibleTableViewDelegate
     public var shouldExpandOnlyOneCell = false
     
     let kIsExpandedKey = "isExpanded"
