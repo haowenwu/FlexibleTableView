@@ -7,125 +7,163 @@
 //
 
 import UIKit
-
-@objc public protocol FlexibleTableViewDelegate: NSObjectProtocol {
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-    func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
-    func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell
-    optional func numberOfSectionsInTableView(tableView: UITableView) -> Int
-    optional func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
-    optional func tableView(tableView: UITableView, heightForSubRowAtIndexPath indexPath: NSIndexPath) -> CGFloat
-    optional func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
-    optional func tableView(tableView: FlexibleTableView, didSelectSubRowAtIndexPath indexPath: FlexibleIndexPath)
-    optional func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
-    optional func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat
-    optional func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String?
-    optional func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String?
-    optional func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
-    optional func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView?
-    optional func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool
+public protocol FlexibleTableViewDelegate: NSObjectProtocol {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    func tableView(_ tableView: UITableView, numberOfSubRowsAt indexPath: IndexPath) -> Int
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+    func tableView(_ tableView: UITableView, cellForSubRowAt indexPath: FlexibleIndexPath) -> UITableViewCell
 }
 
-public class FlexibleIndexPath: NSObject{
-    public var subRow: Int, row: Int, section: Int, ns: NSIndexPath
+// optional
+extension FlexibleTableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44.0
+    }
+    
+    func tableView(_ tableView: UITableView, heightForSubRowAt indexPath: IndexPath) -> CGFloat {
+        return 44.0
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+    
+    func tableView(_ tableView: FlexibleTableView, didSelectSubRowAt indexPath: FlexibleIndexPath) {
+        
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 0.0
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0.0
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, shouldExpandSubRowsOfCellAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+}
+
+open class FlexibleIndexPath: NSObject{
+    open var subRow: Int, row: Int, section: Int, ns: IndexPath
     init(forSubRow subrow:Int,inRow row:Int,inSection section:Int){
         self.subRow = subrow
         self.row=row
         self.section=section
-        self.ns=NSIndexPath(forRow: row, inSection: section)
+        self.ns=IndexPath(row: row, section: section)
     }
 }
 
-public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDataSource {
-    private unowned let flexibleTableViewDelegate: FlexibleTableViewDelegate
-    public var shouldExpandOnlyOneCell = false
+open class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDataSource {
+    fileprivate unowned let flexibleTableViewDelegate: FlexibleTableViewDelegate
+    open var shouldExpandOnlyOneCell = false
     
     let kIsExpandedKey = "isExpanded"
     let kSubrowsKey = "subrowsCount"
     let kDefaultCellHeight = 44.0
     
-    public let expandableCells = NSMutableDictionary()
+    open let expandableCells = NSMutableDictionary()
     
     public init(frame: CGRect,delegate: FlexibleTableViewDelegate) {
         flexibleTableViewDelegate = delegate
-        super.init(frame: frame, style: .Plain)
+        super.init(frame: frame, style: .plain)
         self.delegate=self
         self.dataSource=self
         refreshData()
     }
     required public init?(coder aDecoder: NSCoder) {fatalError("init(coder:) has not been implemented")}
     
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
+    open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let correspondingIndexPath = correspondingIndexPathForRowAt(indexPath)
         if correspondingIndexPath.subRow == 0 {
-            let expandableCell = flexibleTableViewDelegate.tableView(self, cellForRowAtIndexPath:correspondingIndexPath.ns) as! FlexibleTableViewCell
+            let expandableCell = flexibleTableViewDelegate.tableView(self, cellForRowAt:correspondingIndexPath.ns) as! FlexibleTableViewCell
             
             if (expandableCell.expandable) {
-                expandableCell.expanded = (expandableCells[correspondingIndexPath.section] as! NSMutableArray)[correspondingIndexPath.row][kIsExpandedKey] as! Bool
+                expandableCell.expanded = ((expandableCells[correspondingIndexPath.section] as! NSMutableArray)[correspondingIndexPath.row]as! NSDictionary)[kIsExpandedKey] as! Bool
                 if (expandableCell.expanded){
-                    expandableCell.accessoryView!.transform = CGAffineTransformMakeRotation(CGFloat(M_PI));
+                    expandableCell.accessoryView!.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI));
                 }
             }
             return expandableCell;
         } else {
-            let cell = flexibleTableViewDelegate.tableView(self, cellForSubRowAtIndexPath:correspondingIndexPath)
+            let cell = flexibleTableViewDelegate.tableView(self, cellForSubRowAt:correspondingIndexPath)
             cell.indentationLevel = 2
             return cell;
         }
     }
     
     
-    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated:true)
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated:true)
         
-        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        let cell = tableView.cellForRow(at: indexPath)
         
         if let x = cell as? FlexibleTableViewCell {
             
             var _indexPath = indexPath
-            let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(_indexPath)
+            let correspondingIndexPath = correspondingIndexPathForRowAt(_indexPath)
             
-            flexibleTableViewDelegate.tableView?(self, didSelectRowAtIndexPath:correspondingIndexPath.ns)
+            flexibleTableViewDelegate.tableView(self, didSelectRowAt:correspondingIndexPath.ns)
             
             if !x.expandable { return }
             
             x.expanded = !x.expanded
-        
+            
             if (x.expanded && shouldExpandOnlyOneCell) {
                 _indexPath = correspondingIndexPath.ns;
                 collapseCurrentlyExpandedIndexPaths()
             }
             
-            let numberOfSubRows = numberOfSubRowsAtIndexPath(correspondingIndexPath.ns)
+            let numberOfSubRows = numberOfSubRowsAt(correspondingIndexPath.ns)
             
-            var expandedIndexPaths = [NSIndexPath]()
-            let row = _indexPath.row;
-            let section = _indexPath.section;
+            var expandedIndexPaths = [IndexPath]()
+            let row = (_indexPath as NSIndexPath).row;
+            let section = (_indexPath as NSIndexPath).section;
             
             for index in 1...numberOfSubRows {
-                let expIndexPath = NSIndexPath(forRow:row+index, inSection:section)
+                let expIndexPath = IndexPath(row:row+index, section:section)
                 expandedIndexPaths.append(expIndexPath)
             }
             
             if (x.expanded) {
-                setExpanded(true, forCellAtIndexPath:correspondingIndexPath)
-                insertRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
+                setExpanded(true, forCellAt:correspondingIndexPath)
+                insertRows(at: expandedIndexPaths, with:UITableViewRowAnimation.top)
             } else {
-                setExpanded(false, forCellAtIndexPath:correspondingIndexPath)
-                deleteRowsAtIndexPaths(expandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
+                setExpanded(false, forCellAt:correspondingIndexPath)
+                deleteRows(at: expandedIndexPaths, with:UITableViewRowAnimation.top)
             }
             
             x.accessoryViewAnimation()
             
         } else {
-            let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
+            let correspondingIndexPath = correspondingIndexPathForRowAt(indexPath)
             
-            flexibleTableViewDelegate.tableView?(self, didSelectSubRowAtIndexPath:correspondingIndexPath)
+            flexibleTableViewDelegate.tableView(self, didSelectSubRowAt:correspondingIndexPath)
         }
     }
     
-    public func numberOfExpandedSubrowsInSection(section: Int) -> Int {
+    open func numberOfExpandedSubrowsInSection(_ section: Int) -> Int {
         var totalExpandedSubrows = 0;
         
         let rows = expandableCells[section] as! [NSDictionary]
@@ -137,61 +175,62 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         return totalExpandedSubrows;
     }
     
-    public func numberOfSubRowsAtIndexPath(indexPath: NSIndexPath) -> Int {
-        return flexibleTableViewDelegate.tableView(self, numberOfSubRowsAtIndexPath:indexPath)
+    open func numberOfSubRowsAt(_ indexPath: IndexPath) -> Int {
+        return flexibleTableViewDelegate.tableView(self, numberOfSubRowsAt:indexPath)
     }
     
-    func correspondingIndexPathForRowAtIndexPath(indexPath: NSIndexPath) -> FlexibleIndexPath {
+    func correspondingIndexPathForRowAt(_ indexPath: IndexPath) -> FlexibleIndexPath {
         var expandedSubrows = 0;
         
-        let rows = self.expandableCells[indexPath.section] as! NSArray
-        for (index, value) in rows.enumerate() {
-            let isExpanded = value[self.kIsExpandedKey] as! Bool
+        let rows = self.expandableCells[(indexPath as NSIndexPath).section] as! NSArray
+        for (index, value) in rows.enumerated() {
+            let isExpanded = (value as! NSDictionary)[self.kIsExpandedKey] as! Bool
             var numberOfSubrows = 0;
             if (isExpanded){
-                numberOfSubrows = value[self.kSubrowsKey] as! Int
+                numberOfSubrows = (value as! NSDictionary)[self.kSubrowsKey] as! Int
             }
             
-            let subrow = indexPath.row - expandedSubrows - index;
+            let subrow = (indexPath as NSIndexPath).row - expandedSubrows - index;
             if (subrow > numberOfSubrows){
                 expandedSubrows += numberOfSubrows;
             }
             else{
-                return FlexibleIndexPath(forSubRow: subrow, inRow: index, inSection: indexPath.section)
+                return FlexibleIndexPath(forSubRow: subrow, inRow: index, inSection: (indexPath as NSIndexPath).section)
             }
         }
         return FlexibleIndexPath(forSubRow: 0, inRow: 0, inSection: 0)
     }
     
-    public func setExpanded(isExpanded: Bool, forCellAtIndexPath indexPath: FlexibleIndexPath) {
+    open func setExpanded(_ isExpanded: Bool, forCellAt indexPath: FlexibleIndexPath) {
         let cellInfo = (expandableCells[indexPath.section] as! NSMutableArray)[indexPath.row] as! NSMutableDictionary
-        cellInfo.setObject(isExpanded, forKey:kIsExpandedKey)
+        cellInfo.setObject(isExpanded, forKey:kIsExpandedKey as NSCopying)
     }
     
-    public func collapseCurrentlyExpandedIndexPaths() {
-        var totalExpandedIndexPaths = [NSIndexPath]()
+    open func collapseCurrentlyExpandedIndexPaths() {
+        var totalExpandedIndexPaths = [IndexPath]()
         let totalExpandableIndexPaths = NSMutableArray()
         
         for x in expandableCells {
             var totalExpandedSubrows = 0;
             
-            for (index, value) in (x.value as! NSArray).enumerate() {
+            for (index, value) in (x.value as! NSArray).enumerated() {
                 
                 let currentRow = index + totalExpandedSubrows;
                 
-                if (value[kIsExpandedKey] as! Bool)
+                if ((value as! NSDictionary)[kIsExpandedKey] as! Bool)
                 {
-                    let expandedSubrows = value[kSubrowsKey] as! Int
+                    let expandedSubrows = (value as! NSDictionary)[kSubrowsKey] as! Int
                     
                     for index in 1...expandedSubrows {
-                        let expandedIndexPath = NSIndexPath(forRow:currentRow + index, inSection:x.key as! Int)
+                        let expandedIndexPath = IndexPath(row:currentRow + index, section:x.key as! Int)
                         totalExpandedIndexPaths.append(expandedIndexPath)
                     }
                     
-                    value.setObject(false, forKey:kIsExpandedKey)
+                    (value as AnyObject).setObject(false, forKey:kIsExpandedKey as NSCopying)
+                    
                     totalExpandedSubrows += expandedSubrows;
                     
-                    totalExpandableIndexPaths.addObject(NSIndexPath(forRow:currentRow, inSection:x.key as! Int))
+                    totalExpandableIndexPaths.add(IndexPath(row:currentRow, section:x.key as! Int))
                 }
             }
         }
@@ -199,30 +238,26 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
         
         for indexPath in totalExpandableIndexPaths
         {
-            let cell = cellForRowAtIndexPath(indexPath as! NSIndexPath) as! FlexibleTableViewCell
+            let cell = cellForRow(at: indexPath as! IndexPath) as! FlexibleTableViewCell
             cell.expanded = false
             cell.accessoryViewAnimation()
         }
         
-        deleteRowsAtIndexPaths(totalExpandedIndexPaths, withRowAnimation:UITableViewRowAnimation.Top)
+        deleteRows(at: totalExpandedIndexPaths, with:UITableViewRowAnimation.top)
     }
     
-    public func refreshData(){
+    open func refreshData(){
         expandableCells.removeAllObjects()
-        for section in 0...numberOfSections-1 {
+        for section in 0 ..< numberOfSections {
             let numberOfRowsInSection = flexibleTableViewDelegate.tableView(self, numberOfRowsInSection:section)
             let rows = NSMutableArray()
-            for row in 0...numberOfRowsInSection-1 {
-                let rowIndexPath = NSIndexPath(forRow:row, inSection:section)
-                let numberOfSubrows = flexibleTableViewDelegate.tableView(self, numberOfSubRowsAtIndexPath:rowIndexPath)
-                var isExpandedInitially = false
-                if let isExpandedInitiallyFromDelegate = flexibleTableViewDelegate.tableView?(self, shouldExpandSubRowsOfCellAtIndexPath:rowIndexPath) {
-                    isExpandedInitially = isExpandedInitiallyFromDelegate
-                }
-                let rowInfo = NSMutableDictionary(objects:[isExpandedInitially, numberOfSubrows], forKeys:[kIsExpandedKey, kSubrowsKey])
-                rows.addObject(rowInfo)
+            for row in 0 ..< numberOfRowsInSection {
+                let rowIndexPath = IndexPath(row:row, section:section)
+                let numberOfSubrows = flexibleTableViewDelegate.tableView(self, numberOfSubRowsAt:rowIndexPath)
+                let rowInfo = NSMutableDictionary(objects:[flexibleTableViewDelegate.tableView(self, shouldExpandSubRowsOfCellAt: rowIndexPath), numberOfSubrows], forKeys:[kIsExpandedKey as NSCopying, kSubrowsKey as NSCopying])
+                rows.add(rowInfo)
             }
-            expandableCells.setObject(rows, forKey:section)
+            expandableCells.setObject(rows, forKey:section as NSCopying)
         }
         super.reloadData()
     }
@@ -230,51 +265,36 @@ public class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewDa
     
     
     
-    public func numberOfSectionsInTableView(tableView: UITableView) -> Int{
-        if let numberOfSectionsInTableViewFromDelegate = flexibleTableViewDelegate.numberOfSectionsInTableView?(self) {
-            return numberOfSectionsInTableViewFromDelegate
-        }
-        return 1;
+    open func numberOfSections(in tableView: UITableView) -> Int {
+        return flexibleTableViewDelegate.numberOfSections(in: self);
     }
-    public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return flexibleTableViewDelegate.tableView(self, numberOfRowsInSection:section) + numberOfExpandedSubrowsInSection(section)
     }
-    public func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat{
-        let correspondingIndexPath = correspondingIndexPathForRowAtIndexPath(indexPath)
+    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
+        let correspondingIndexPath = correspondingIndexPathForRowAt(indexPath)
         if correspondingIndexPath.subRow == 0 {
-            if let fromDelegate = flexibleTableViewDelegate.tableView?(self, heightForRowAtIndexPath:correspondingIndexPath.ns) {
-                return fromDelegate
-            }
-            return 44.0;
+            return flexibleTableViewDelegate.tableView(self, heightForRowAt:correspondingIndexPath.ns)
         } else {
-            if let fromDelegate = flexibleTableViewDelegate.tableView?(self, heightForSubRowAtIndexPath:correspondingIndexPath.ns) {
-                return fromDelegate
-            }
-            return 44.0;
+            return flexibleTableViewDelegate.tableView(self, heightForSubRowAt:correspondingIndexPath.ns)
         }
     }
-    public func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if let fromDelegate = flexibleTableViewDelegate.tableView?(self, heightForHeaderInSection: section) {
-            return fromDelegate
-        }
-        return 0.0
+    open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return flexibleTableViewDelegate.tableView(self, heightForHeaderInSection: section)
     }
-    public func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if let fromDelegate = flexibleTableViewDelegate.tableView?(self, heightForFooterInSection: section) {
-            return fromDelegate
-        }
-        return 0.0
+    open func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return flexibleTableViewDelegate.tableView(self, heightForFooterInSection: section)
     }
-    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return flexibleTableViewDelegate.tableView?(self, titleForHeaderInSection: section)
+    open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return flexibleTableViewDelegate.tableView(self, titleForHeaderInSection: section)
     }
-    public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return flexibleTableViewDelegate.tableView?(self, titleForFooterInSection: section)
+    open func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return flexibleTableViewDelegate.tableView(self, titleForFooterInSection: section)
     }
-    public func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return flexibleTableViewDelegate.tableView?(self, viewForHeaderInSection: section)
+    open func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return flexibleTableViewDelegate.tableView(self, viewForHeaderInSection: section)
     }
-    public func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return flexibleTableViewDelegate.tableView?(self, viewForFooterInSection: section)
+    open func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return flexibleTableViewDelegate.tableView(self, viewForFooterInSection: section)
     }
 }

@@ -28,24 +28,24 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         navigationItem.title = "FlexibleTableView";
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title:"Collapse",
-            style:.Plain,
+            style:.plain,
             target:self,
             action:#selector(ViewController.collapseSubrows))
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
         return contents.count
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return contents[section].count
     }
     
-    func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int {
+    func tableView(_ tableView: UITableView, numberOfSubRowsAt indexPath: IndexPath) -> Int {
         return contents[indexPath.section][indexPath.row].count - 1;
     }
     
-    func tableView(tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, shouldExpandSubRowsOfCellAtIndexPath indexPath: IndexPath) -> Bool {
         if (indexPath.section == 1 && indexPath.row == 0){
             return true
         }
@@ -53,9 +53,9 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         return false
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = FlexibleTableViewCell(style:.Default, reuseIdentifier:"cell")
+        let cell = FlexibleTableViewCell(style:.default, reuseIdentifier:"cell")
         
         cell.textLabel!.text = contents[indexPath.section][indexPath.row][0]
         
@@ -68,21 +68,20 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         return cell;
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = self.tableView(tableView, cellForRowAtIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
+        let cell = self.tableView(tableView, cellForRowAt: indexPath)
         
-        print("didSelectRowAtIndexPath", cell.textLabel?.text)
+        print("didSelectRowAtIndexPath", cell.textLabel?.text ?? "")
     }
     
-    func tableView(tableView: FlexibleTableView, didSelectSubRowAtIndexPath indexPath: FlexibleIndexPath) {
-        let cell = self.tableView(tableView, cellForSubRowAtIndexPath: indexPath)
-        
-        print("didSelectSubRowAtIndexPath", cell.textLabel?.text)
+    func tableView(_ tableView: FlexibleTableView, didSelectSubRowAtIndexPath indexPath: FlexibleIndexPath) {
+        let cell = self.tableView(tableView, cellForSubRowAt: indexPath)
+        print("didSelectSubRowAtIndexPath", cell.textLabel?.text ?? "")
     }
     
-    func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style:.Default, reuseIdentifier:"cell")
-        cell.backgroundColor=UIColor.groupTableViewBackgroundColor()
+    func tableView(_ tableView: UITableView, cellForSubRowAt indexPath: FlexibleIndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style:.default, reuseIdentifier:"cell")
+        cell.backgroundColor=UIColor.groupTableViewBackground
         cell.textLabel!.text = contents[indexPath.section][indexPath.row][indexPath.subRow]
         return cell;
     }
@@ -92,7 +91,7 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
         tableView.collapseCurrentlyExpandedIndexPaths()
     }
     
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 30.0
     }
 }
