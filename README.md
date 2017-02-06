@@ -6,7 +6,8 @@ Inspired By [SKSTableView](https://github.com/sakkaras/SKSTableView).
 
 ## Requirements
 - iOS 7.0+
-- Xcode 7.0
+- Xcode 8.0
+- Swift3
 
 ## Installation
 
@@ -24,10 +25,10 @@ pod "FlexibleTableView"
 FlexibleTableView work the same as UITableView but just with one FlexibleTableViewDelegate.
 
 ```swift
-func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-func tableView(tableView: UITableView, numberOfSubRowsAtIndexPath indexPath: NSIndexPath) -> Int
-func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
-func tableView(tableView: UITableView, cellForSubRowAtIndexPath indexPath: FlexibleIndexPath) -> UITableViewCell
+func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int 
+func tableView(_ tableView: UITableView, numberOfSubRowsAt indexPath: IndexPath) -> Int
+func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+func tableView(_ tableView: UITableView, cellForSubRowAt indexPath: FlexibleIndexPath) -> UITableViewCell
 ```
 
 ## License
