@@ -143,6 +143,9 @@ open class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewData
             
             for index in 1...numberOfSubRows {
                 let expIndexPath = IndexPath(row:row+index, section:section)
+                if tableView.numberOfRows(inSection: section) <= expIndexPath.row {
+                    return;
+                }
                 expandedIndexPaths.append(expIndexPath)
             }
             
