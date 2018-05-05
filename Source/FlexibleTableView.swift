@@ -102,7 +102,7 @@ open class FlexibleTableView : UITableView, UITableViewDelegate, UITableViewData
             if (expandableCell.expandable) {
                 expandableCell.expanded = ((expandableCells[correspondingIndexPath.section] as! NSMutableArray)[correspondingIndexPath.row]as! NSDictionary)[kIsExpandedKey] as! Bool
                 if (expandableCell.expanded){
-                    expandableCell.accessoryView!.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI));
+                    expandableCell.accessoryView!.transform = CGAffineTransform(rotationAngle: CGFloat.pi);
                 }
             }
             return expandableCell;

@@ -87,7 +87,7 @@ class ViewController: UIViewController, FlexibleTableViewDelegate {
     }
     
     
-    func collapseSubrows() {
+    @objc func collapseSubrows() {
         tableView.collapseCurrentlyExpandedIndexPaths()
     }
     

@@ -37,7 +37,7 @@ open class FlexibleTableViewCell: UITableViewCell {
     open func accessoryViewAnimation() {
         UIView.animate(withDuration: 0.2, animations: {
             if (self.expanded) {
-                self.accessoryView?.transform = CGAffineTransform(rotationAngle: CGFloat(M_PI));
+                self.accessoryView?.transform = CGAffineTransform(rotationAngle: CGFloat.pi);
             } else {
                 self.accessoryView?.transform = CGAffineTransform(rotationAngle: 0);
             }
